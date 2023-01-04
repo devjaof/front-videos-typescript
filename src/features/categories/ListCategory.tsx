@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks"
 import { selectCategories } from "./categorySlice";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { DataGrid, GridColDef, GridRenderCellParams, GridRowsProp } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams, GridRowsProp, GridToolbar } from '@mui/x-data-grid';
 
 export const CategoryList = () => {
   const categories = useAppSelector(selectCategories);
@@ -14,10 +14,15 @@ export const CategoryList = () => {
     description: el.description,
     createdAt: new Date(el.created_at).toLocaleDateString('pr-BR'),
     is_active: el.is_active,
-  }));
+  }))
 
   const columns: GridColDef[] = [
-    { field: 'title', headerName: 'Título', flex: 1 },
+    { 
+      field: 'title', 
+      headerName: 'Título', 
+      flex: 1,
+      renderCell: renderNameCell,
+    },
     { field: 'description', headerName: 'Descrição', flex: 1 },
     { field: 'createdAt', headerName: 'Data de Criação', flex: 1 },
     { field: 'is_active', 
@@ -32,7 +37,25 @@ export const CategoryList = () => {
       type: "action",
       renderCell: renderActionsCell 
     },
-  ];
+  ]
+
+  const componentsProps = {
+      toolbar: {
+        showQuickFilter: true,
+        quickFilterProps: { debounceMs: 500 }
+      }
+  }
+
+  function renderNameCell(rowData: GridRenderCellParams) {
+    return (
+      <Link
+        style={{ textDecoration: "none"}}
+        to={`/categories/${rowData.id}/edit`}
+      >
+        <Typography color="primary">{rowData.value}</Typography>
+      </Link>
+    )
+  }
 
   function renderActionsCell(params: GridRenderCellParams) {
     return (
@@ -68,11 +91,19 @@ export const CategoryList = () => {
         </Button>
       </Box>
 
-      <div style={{ height: 600, width: '100%' }}>
+      <Box sx={{ height: 600, display: "flex" }}>
         <DataGrid 
+        rows={rows}
+        columns={columns}
+        disableColumnFilter={true}
+        disableColumnSelector={true}
+        disableDensitySelector={true}
+        disableSelectionOnClick={true}
+        componentsProps={componentsProps}
+        components={{ Toolbar: GridToolbar }}
         rowsPerPageOptions={[5, 10, 20, 50, 100]}
-        rows={rows} columns={columns} />
-      </div>
+      />
+      </Box>
     </Box>
   )
 }
