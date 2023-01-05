@@ -4,10 +4,12 @@ import { DataGrid, GridColDef, GridRenderCellParams, GridRowsProp, GridToolbar }
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { deleteCategory, selectCategories } from "./categorySlice";
+import { useSnackbar } from "notistack";
 
 export const CategoryList = () => {
   const categories = useAppSelector(selectCategories);
   const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
 
   const rows: GridRowsProp = categories.map((el) => ({
     id: el.id,
@@ -60,6 +62,7 @@ export const CategoryList = () => {
 
   function handleDeleteCategory(id: string) {
     dispatch(deleteCategory(id));
+    enqueueSnackbar("Categoria deletada com sucesso!", { variant: "success" });
   }
 
   function renderActionsCell(params: GridRenderCellParams) {

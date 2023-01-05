@@ -1,6 +1,7 @@
-import { Box, Button, FormControl, FormControlLabel, FormGroup, Grid, Paper, Switch, TextField, Typography } from "@mui/material"
+import { Box, Paper, Typography } from "@mui/material";
+import { useSnackbar } from "notistack";
 import React, { useState } from "react";
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { Category, selectCategoryById, updateCategory } from "./categorySlice";
 import { CategoryForm } from "./components/CategoryForm";
@@ -11,10 +12,12 @@ export const EditCategory = () => {
   const category = useAppSelector((state) => selectCategoryById(state, id));
   const [ categoryState, setCategoryState ] = useState<Category>(category);
   const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     dispatch(updateCategory(categoryState));
+    enqueueSnackbar("Categoria atualizada com sucesso!", { variant: "success" });
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
