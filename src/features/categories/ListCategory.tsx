@@ -1,12 +1,13 @@
-import { Box, Button, IconButton, Typography } from "@mui/material"
-import { Link } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks"
-import { selectCategories } from "./categorySlice";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams, GridRowsProp, GridToolbar } from '@mui/x-data-grid';
+import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { deleteCategory, selectCategories } from "./categorySlice";
 
 export const CategoryList = () => {
   const categories = useAppSelector(selectCategories);
+  const dispatch = useAppDispatch();
 
   const rows: GridRowsProp = categories.map((el) => ({
     id: el.id,
@@ -34,16 +35,16 @@ export const CategoryList = () => {
       field: 'id', 
       headerName: 'Ações', 
       flex: 1, 
-      type: "action",
+      type: "string",
       renderCell: renderActionsCell 
     },
   ]
 
   const componentsProps = {
-      toolbar: {
-        showQuickFilter: true,
-        quickFilterProps: { debounceMs: 500 }
-      }
+    toolbar: {
+      showQuickFilter: true,
+      quickFilterProps: { debounceMs: 500 }
+    }
   }
 
   function renderNameCell(rowData: GridRenderCellParams) {
@@ -57,11 +58,15 @@ export const CategoryList = () => {
     )
   }
 
+  function handleDeleteCategory(id: string) {
+    dispatch(deleteCategory(id));
+  }
+
   function renderActionsCell(params: GridRenderCellParams) {
-    return (
+      return (
       <IconButton
         color="secondary"
-        onClick={() => console.log('deleted')}
+        onClick={() => handleDeleteCategory(params.value)}
         aria-label="Delete"
       >
         <DeleteIcon/>
